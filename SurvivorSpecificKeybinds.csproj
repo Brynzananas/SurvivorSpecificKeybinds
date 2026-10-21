@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.1</TargetFramework>
+		<LangVersion>preview</LangVersion>
+		<BaseOutputPath>D:\Gale\Data\riskofrain2\profiles\Test\BepInEx\plugins\SurvivorIndividualInputSettings</BaseOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BepInEx.Core" Version="5.4.21" />
+		<PackageReference Include="MMHOOK.RoR2" Version="2026.10.8" NoWarn="NU1701" />
+		<PackageReference Include="RiskOfRain2.GameLibs" Version="1.5.0-r.1" />
+		<PackageReference Include="UnityEngine.Modules" Version="2021.3.45" />
+		<PackageReference Include="RoR2BepInExPack" Version="1.46.0" />
+		<PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.2" />
+		<Reference Include="Bubbet-ZioConfig">
+			<Private>false</Private>
+			<HintPath>$(MSBuildProjectDirectory)\libs\ZioConfigFile.dll</HintPath>
+		</Reference>
+		<Reference Include="JohnZio-Zio">
+			<Private>false</Private>
+			<HintPath>$(MSBuildProjectDirectory)\libs\Zio.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>
