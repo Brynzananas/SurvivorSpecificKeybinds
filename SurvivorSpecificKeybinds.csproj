@@ -13,10 +13,6 @@
 		<PackageReference Include="UnityEngine.Modules" Version="2021.3.45" />
 		<PackageReference Include="RoR2BepInExPack" Version="1.46.0" />
 		<PackageReference Include="Rune580.Mods.RiskOfRain2.RiskOfOptions" Version="2.8.2" />
-		<Reference Include="Bubbet-ZioConfig">
-			<Private>false</Private>
-			<HintPath>$(MSBuildProjectDirectory)\libs\ZioConfigFile.dll</HintPath>
-		</Reference>
 		<Reference Include="JohnZio-Zio">
 			<Private>false</Private>
 			<HintPath>$(MSBuildProjectDirectory)\libs\Zio.dll</HintPath>

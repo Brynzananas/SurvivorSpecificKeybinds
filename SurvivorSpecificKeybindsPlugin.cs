@@ -26,7 +26,6 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Zio;
 using Zio.FileSystems;
-using ZioConfigFile;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
 
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
