@@ -10,6 +10,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text;
 using UnityEngine;
+using RoR2.UI;
 #pragma warning disable CS0618
 #pragma warning restore CS0618
 namespace SurvivorSpecificKeybinds;
@@ -20,6 +21,41 @@ public static class SurvivorSpecificKeybindsUtils
     public static FixedConditionalWeakTable<UserProfile, MouseMap> defaultMouseMaps = [];
     public static FixedConditionalWeakTable<UserProfile, JoystickMap> defaultJoystickMaps = [];
     public static FixedConditionalWeakTable<UserProfile, Dictionary<string, SurvivorSpecificKeybindsData>> inputsByBodyNames = [];
+    public static void SetSurvivorSpecificKeybinds(LocalUser localUser)
+    {
+        UserProfile userProfile = localUser.userProfile;
+        if (userProfile == null) return;
+        SurvivorSpecificKeybindsUtils.EnsureUserProfileDefaultMaps(userProfile);
+        if (!localUser.cachedBody)
+        {
+            userProfile.keyboardMap = SurvivorSpecificKeybindsUtils.defaultKeyboardMaps[userProfile];
+            userProfile.mouseMap = SurvivorSpecificKeybindsUtils.defaultMouseMaps[userProfile];
+            userProfile.joystickMap = SurvivorSpecificKeybindsUtils.defaultJoystickMaps[userProfile];
+            localUser.ApplyUserProfileBindingsToRewiredPlayer();
+            MPEventSystem.RefreshAllControllerGlyphs();
+            SurvivorSpecificKeybindsPlugin.currentSurvivorBody = "DefaultDefaultDefault";
+            return;
+        }
+        string bodyName = localUser.cachedBody.name.Replace("(Clone)", "");
+        if (SurvivorSpecificKeybindsUtils.TryGetUserProfileSurvivorSpecificInputsData(userProfile, bodyName, out SurvivorSpecificKeybindsData survivorSpecificInputsData))
+        {
+            userProfile.keyboardMap = survivorSpecificInputsData.keyboardMap;
+            userProfile.joystickMap = survivorSpecificInputsData.joystickMap;
+            userProfile.mouseMap = survivorSpecificInputsData.mouseMap;
+            SurvivorSpecificKeybindsPlugin.currentSurvivorBody = bodyName;
+            localUser.ApplyUserProfileBindingsToRewiredPlayer();
+            MPEventSystem.RefreshAllControllerGlyphs();
+        }
+        else
+        {
+            userProfile.keyboardMap = SurvivorSpecificKeybindsUtils.defaultKeyboardMaps[userProfile];
+            userProfile.mouseMap = SurvivorSpecificKeybindsUtils.defaultMouseMaps[userProfile];
+            userProfile.joystickMap = SurvivorSpecificKeybindsUtils.defaultJoystickMaps[userProfile];
+            SurvivorSpecificKeybindsPlugin.currentSurvivorBody = "DefaultDefaultDefault";
+            localUser.ApplyUserProfileBindingsToRewiredPlayer();
+            MPEventSystem.RefreshAllControllerGlyphs();
+        }
+    }
     public static void EnsureUserProfileDefaultMaps() => EnsureUserProfileDefaultMaps(GetUserProfile());
     public static void EnsureUserProfileDefaultMaps(UserProfile userProfile)
     {

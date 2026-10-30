@@ -37,7 +37,6 @@ public class SurvivorSpecificKeybindsSelectorController : MonoBehaviour
             gameObject.SetActive(true);
         }
         survivorIconButtonPrefab.SetActive(true);
-        if (Run.instance) gameObject.SetActive(false);
     }
     public void Update()
     {

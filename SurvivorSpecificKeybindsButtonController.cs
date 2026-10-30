@@ -15,10 +15,25 @@ public class SurvivorSpecificKeybindsButtonController : MonoBehaviour
     public RawImage rawImage;
     public Color selectedColor;
     public Color unselectedColor;
+    private MPEventSystemLocator mPEventSystemLocator;
+    public void Awake()
+    {
+        mPEventSystemLocator = GetComponent<MPEventSystemLocator>();
+    }
     public void TestCall()
     {
-        SurvivorSpecificKeybindsUtils.EnsureUserProfileDefaultMaps();
-        UserProfile userProfile = SurvivorSpecificKeybindsUtils.GetUserProfile();
+        UserProfile userProfile;
+        if (mPEventSystemLocator && mPEventSystemLocator.eventSystem && mPEventSystemLocator.eventSystem.localUser != null)
+        {
+            userProfile = mPEventSystemLocator.eventSystem.localUser.userProfile;
+            SurvivorSpecificKeybindsUtils.EnsureUserProfileDefaultMaps(userProfile);
+
+        }
+        else
+        {
+            userProfile = SurvivorSpecificKeybindsUtils.GetUserProfile();
+            SurvivorSpecificKeybindsUtils.EnsureUserProfileDefaultMaps();
+        }
         if (userProfile == null) return;
         if (bodyName == "DefaultDefaultDefault")
         {

@@ -1,4 +1,5 @@
 ﻿using Rewired;
+using RoR2;
 using RoR2.UI;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +14,10 @@ public class SurvivorSpecificKeybindsController : MonoBehaviour
     public static SurvivorSpecificKeybindsController instance;
     public string selectedBodyName = "DefaultDefaultDefault";
     public Transform kbmHolder;
+    private MPEventSystemLocator mPEventSystemLocator;
     public void Awake()
     {
+        mPEventSystemLocator = GetComponent<MPEventSystemLocator>();
         instance = this;
         if (init) return;
         init = true;
@@ -30,5 +33,9 @@ public class SurvivorSpecificKeybindsController : MonoBehaviour
         if (transform6) GameObject.Destroy(transform6.gameObject);
         GameObject gameObject3 = GameObject.Instantiate(SurvivorSpecificKeybindsPlugin.SurvivorIconsHolder, gameObject2.transform);
     }
-   
+    public void OnDisable()
+    {
+        if (!Run.instance || !mPEventSystemLocator || !mPEventSystemLocator.eventSystem || mPEventSystemLocator.eventSystem.localUser == null) return;
+        SurvivorSpecificKeybindsUtils.SetSurvivorSpecificKeybinds(mPEventSystemLocator.eventSystem.localUser);
+    }
 }

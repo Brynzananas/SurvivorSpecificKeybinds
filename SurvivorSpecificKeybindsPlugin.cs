@@ -40,16 +40,21 @@ public class SurvivorSpecificKeybindsPlugin : BaseUnityPlugin
 {
     public const string ModGuid = "com.brynzananas.survivorspecifickeybinds";
     public const string ModName = "Survivor Specific Keybinds";
-    public const string ModVer = "0.1.0";
+    public const string ModVer = "0.2.0";
     public static AssetBundle assetBundle;
     public static GameObject SurvivorIconsHolder;
     public static SurvivorSpecificKeybindsPlugin instance;
     public static string currentSurvivorBody;
     public static FixedConditionalWeakTable<UserProfile, SurvivorSpecificKeybindsSave> keyValuePairs = [];
+    public static GameObject SettingsPanelTitle;
+    public static GameObject SettingsPanel;
     public void Awake()
     {
         instance = this;
-        Addressables.LoadAssetAsync<GameObject>("RoR2/Base/UI/SettingsPanelTitle.prefab").WaitForCompletion().AddComponent<SurvivorSpecificKeybindsController>();
+        SettingsPanelTitle = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_UI.SettingsPanelTitle_prefab).WaitForCompletion();
+        SettingsPanel = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_UI.SettingsPanel_prefab).WaitForCompletion();
+        SettingsPanelTitle.AddComponent<SurvivorSpecificKeybindsController>();
+        SettingsPanel.AddComponent<SurvivorSpecificKeybindsController>();
         assetBundle = AssetBundle.LoadFromFileAsync(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(this.Info.Location), "assetbundles", "survivorspecificsettingsassets")).assetBundle;
         SurvivorIconsHolder = assetBundle.LoadAsset<GameObject>("Assets/SurvivorSpecificSettings/SurvivorIconsHolder.prefab");
         SetHooks();
@@ -92,7 +97,6 @@ public class SurvivorSpecificKeybindsPlugin : BaseUnityPlugin
     {
         FileSystem fileSystem = RoR2Application.cloudStorage;
         string directory = "/UserProfiles/" + userProfile.fileName.CleanString();
-        instance.Logger.LogInfo("Reading path: " + directory);
         if (!fileSystem.DirectoryExists(directory))
         {
             fileSystem.CreateDirectory(directory);
@@ -100,7 +104,6 @@ public class SurvivorSpecificKeybindsPlugin : BaseUnityPlugin
         foreach (UPath uPath in fileSystem.EnumeratePaths(directory))
         {
             if (!fileSystem.FileExists(uPath)) continue;
-            instance.Logger.LogInfo("fullpath: " + uPath.FullName);
             if (!uPath.FullName.EndsWith("SurvivorSpecificKeybinds.xml")) continue;
             try
             {
@@ -201,33 +204,6 @@ public class SurvivorSpecificKeybindsPlugin : BaseUnityPlugin
     }
     private static void OnBodyChanged(LocalUser localUser)
     {
-        UserProfile userProfile = localUser.userProfile;
-        if (userProfile == null) return;
-        SurvivorSpecificKeybindsUtils.EnsureUserProfileDefaultMaps(userProfile);
-        if (!localUser.cachedBody)
-        {
-            userProfile.keyboardMap = SurvivorSpecificKeybindsUtils.defaultKeyboardMaps[userProfile];
-            userProfile.mouseMap = SurvivorSpecificKeybindsUtils.defaultMouseMaps[userProfile];
-            userProfile.joystickMap = SurvivorSpecificKeybindsUtils.defaultJoystickMaps[userProfile];
-            localUser.ApplyUserProfileBindingsToRewiredPlayer();
-            MPEventSystem.RefreshAllControllerGlyphs();
-        }
-        string bodyName = localUser.cachedBody.name.Replace("(Clone)", "");
-        if (SurvivorSpecificKeybindsUtils.TryGetUserProfileSurvivorSpecificInputsData(userProfile, bodyName, out SurvivorSpecificKeybindsData survivorSpecificInputsData))
-        {
-            userProfile.keyboardMap = survivorSpecificInputsData.keyboardMap;
-            userProfile.joystickMap = survivorSpecificInputsData.joystickMap;
-            userProfile.mouseMap = survivorSpecificInputsData.mouseMap;
-            localUser.ApplyUserProfileBindingsToRewiredPlayer();
-            MPEventSystem.RefreshAllControllerGlyphs();
-        }
-        else
-        {
-            userProfile.keyboardMap = SurvivorSpecificKeybindsUtils.defaultKeyboardMaps[userProfile];
-            userProfile.mouseMap = SurvivorSpecificKeybindsUtils.defaultMouseMaps[userProfile];
-            userProfile.joystickMap = SurvivorSpecificKeybindsUtils.defaultJoystickMaps[userProfile];
-            localUser.ApplyUserProfileBindingsToRewiredPlayer();
-            MPEventSystem.RefreshAllControllerGlyphs();
-        }
+        SurvivorSpecificKeybindsUtils.SetSurvivorSpecificKeybinds(localUser);
     }
 }
